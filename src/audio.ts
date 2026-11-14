@@ -83,6 +83,14 @@ function instrument(kind: Instrument): Voice {
   }
 }
 export class AudioEngine {
+  private analyser?: Tone.Analyser;
+  waveform() {
+    if (!this.analyser) {
+      this.analyser = new Tone.Analyser("waveform", 256);
+      this.limiter.connect(this.analyser);
+    }
+    return this.analyser.getValue() as Float32Array;
+  }
   voices: Voice[] = [];
   pans: Tone.Panner[] = [];
   filters: Tone.Filter[] = [];
@@ -165,6 +173,7 @@ export class AudioEngine {
     this.delay.wet.value = soundDesigns[this.profile].wet;
   }
   dispose() {
+    this.analyser?.dispose();
     this.voices.forEach((v) => v.dispose());
     this.filters.forEach((f) => f.dispose());
     this.gains.forEach((g) => g.dispose());

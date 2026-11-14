@@ -1,0 +1,15 @@
+{
+  "file": "earth-day.jpg",
+  "title": "Blue Marble Next Generation, May 2004, topography and bathymetry",
+  "source": "https://raw.githubusercontent.com/nasa/World-Wind-Java/master/WorldWind/src/images/BMNG_world.topo.bathy.200405.3.2048x1024.jpg",
+  "publisher": "NASA World Wind / NASA Earth Observatory",
+  "context": "https://earthobservatory.nasa.gov/features/BlueMarble/BlueMarble.php",
+  "dimensions": [
+    2048,
+    1024
+  ],
+  "processing": "Downloaded JPEG, unchanged; sRGB texture, display lighting only.",
+  "use": "Decorative geographic context on the globe; never used as sonification input.",
+  "usage": "NASA imagery; retain attribution and follow https://www.nasa.gov/nasa-brand-center/images-and-media/",
+  "downloaded": "2026-11-14"
+}

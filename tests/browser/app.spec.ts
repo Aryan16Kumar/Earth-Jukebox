@@ -6,16 +6,17 @@ test("region listening, ASCII, audio controls, focus restoration and mobile layo
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "A planet worth listening to." }),
+    page.getByRole("heading", { name: "THE PLANET HAS A SOUNDTRACK." }),
   ).toBeVisible();
   await expect(page.locator(".globe-label")).toHaveCount(2, { timeout: 30000 });
   await page.screenshot({
     path: "test-results/landing-desktop.png",
     fullPage: true,
   });
+  await page.getByRole("button", { name: "ENTER EARTH", exact: true }).click();
   const region = page.locator(".region-card").first();
   await region.click();
-  const room = page.getByRole("dialog");
+  const room = page.locator(".listening-room");
   await expect(room).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Pause sonification" }),
@@ -42,6 +43,7 @@ test("region listening, ASCII, audio controls, focus restoration and mobile layo
     path: "test-results/landing-mobile.png",
     fullPage: true,
   });
+  await page.getByRole("button", { name: "ENTER EARTH", exact: true }).click();
   await page.locator(".region-card").nth(1).click();
   await expect(
     page.getByRole("heading", { name: "Ukraine at night." }),

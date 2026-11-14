@@ -6,7 +6,8 @@ test("every NASA resource loads, maps pixels, exposes source and renders ASCII",
   test.setTimeout(180000);
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
+  await page.goto("/explore");
+  await page.getByRole("button", { name: "Sound library" }).click();
   await expect(page.locator(".resource-row")).toHaveCount(9);
   const signals = [];
   for (const scene of catalog) {
@@ -66,7 +67,7 @@ test("every NASA resource loads, maps pixels, exposes source and renders ASCII",
     await page
       .getByRole("button", { name: `Listen to ${scene.name}`, exact: true })
       .click();
-    const room = page.getByRole("dialog");
+    const room = page.locator(".listening-room");
     await expect(room).toBeVisible();
     await expect(room.locator(".scene-tabs")).toContainText(scene.period!);
     await expect(room.locator(".scene-source-label")).toContainText(
@@ -93,6 +94,7 @@ test("every NASA resource loads, maps pixels, exposes source and renders ASCII",
       await room.screenshot({ path: "test-results/catalog-player.png" });
     await page.keyboard.press("Escape");
     await expect(room).not.toBeVisible();
+    await page.getByRole("button", { name: "Sound library" }).click();
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page
