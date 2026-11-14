@@ -13,3 +13,4 @@
 /.codex/hooks.json
 /.cursor/hooks.json
 /.gemini/settings.json
+/debug.log

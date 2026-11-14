@@ -1,5 +1,5 @@
 import { Component, Suspense, useRef, useEffect, type ReactNode } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, useTexture, Html, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import { regions, asset, type Region } from "./scenes";
@@ -21,9 +21,11 @@ function Planet({
   onSelect,
   selected,
   interacting,
+  dragging,
 }: {
   selected?: Region;
   interacting: React.MutableRefObject<boolean>;
+  dragging: React.MutableRefObject<boolean>;
   rotate: boolean;
   onSelect: (r: Region) => void;
 }) {
@@ -45,7 +47,8 @@ function Planet({
       new THREE.Vector3(0, 0, 1),
     );
   }, [selected]);
-  texture.anisotropy = 8;
+  const gl = useThree((state) => state.gl);
+  texture.anisotropy = gl.capabilities.getMaxAnisotropy();
   texture.colorSpace = THREE.SRGBColorSpace;
   useFrame(({ camera }, delta) => {
     if (target.current && group.current && !interacting.current) {
@@ -70,7 +73,8 @@ function Planet({
           : 1 - Math.exp(-delta * 4),
       );
     }
-    if (rotate && group.current) group.current.rotation.y += delta * 0.025;
+    if (rotate && !dragging.current && group.current)
+      group.current.rotation.y += delta * 0.025;
   });
   return (
     <group ref={group} rotation={[0.12, -2.8, 0.06]}>
@@ -161,22 +165,30 @@ export default function Globe({
   onInteract,
   onFail,
   selected,
+  presentation = false,
 }: {
+  presentation?: boolean;
   selected?: Region;
   rotate: boolean;
   onSelect: (r: Region) => void;
-  onInteract: () => void;
+  onInteract?: () => void;
   onFail: () => void;
 }) {
   const interacting = useRef(false);
+  const dragging = useRef(false);
   function interact() {
     interacting.current = true;
-    onInteract();
+    dragging.current = true;
+    onInteract?.();
   }
   return (
     <Boundary onFail={onFail}>
       <Canvas
-        camera={{ position: [0, 0.4, 6.4], fov: 43 }}
+        camera={{
+          position: [0, 0.4, presentation ? 8 : 6.4],
+          fov: presentation ? 60 : 43,
+        }}
+        gl={{ antialias: true, alpha: true }}
         dpr={[1, 2]}
         fallback={
           <p className="webgl-fallback">
@@ -193,6 +205,7 @@ export default function Globe({
             onSelect={onSelect}
             selected={selected}
             interacting={interacting}
+            dragging={dragging}
           />
           <Stars
             radius={70}
@@ -205,9 +218,12 @@ export default function Globe({
           <OrbitControls
             enablePan={false}
             minDistance={3.8}
-            maxDistance={9}
+            maxDistance={presentation ? 12 : 9}
             enableDamping
             onStart={interact}
+            onEnd={() => {
+              dragging.current = false;
+            }}
           />
         </Suspense>
       </Canvas>

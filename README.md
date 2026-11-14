@@ -108,6 +108,6 @@ These instrumental choices are artistic conventions, not natural sounds measured
 
 The separate landing page introduces the experience with a rotating Earth and a Canvas ASCII field. `/explore` contains the globe, regional shortcuts, unified search, NASA library, nonmodal detail panel (expandable bottom sheet on phones), and persistent audio dock. The dock visualizes the actual output through a read-only Tone analyser. Image analysis, calibration, instrument profiles and source assets are unchanged.
 
-The globe uses NASA Blue Marble Next Generation (May 2004), obtained from NASA's World Wind repository. This 2048 x 1024 context texture is separate from the images used for sonification. Provenance is recorded in `public/assets/globe-provenance.json`. It is a global texture, not streamed Google Earth terrain or street-level imagery.
+The globe uses NASA Blue Marble Next Generation (May 2004), downloaded from NASA Earth Observatory. This 5400 x 2700 context texture is separate from the images used for sonification. Provenance is recorded in `public/assets/globe-provenance.json`. It is a global texture, not streamed Google Earth terrain or street-level imagery.
 
 Reduced motion stops automatic orbit and ASCII animation; search and controls remain immediate. Reduced transparency and high contrast receive explicit surface treatments. No new package dependencies were added. See `UI_REDESIGN_SUMMARY.md` for scope, checks and limitations.

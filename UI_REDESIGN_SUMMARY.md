@@ -22,4 +22,8 @@ Production build and all 30 unit tests passed. All five browser tests passed, co
 
 ## Limitations
 
-The globe uses a 2048 x 1024 global NASA texture, not streamed terrain or Google Earth-level deep zoom. Geographic coverage remains two regional windows; other scenes retain their original camera geography. Still-image scan time is not historical time. Mobile details expand via a button, not a swipe gesture. Human listening, real-device touch performance and specialist screen-reader validation remain outstanding. The existing large Three.js/Tone bundles still produce a build-size warning. Static hosts need SPA fallback for `/explore`.
+The globe uses a 5400 x 2700 global NASA texture, not streamed terrain or Google Earth-level deep zoom. Geographic coverage remains two regional windows; other scenes retain their original camera geography. Still-image scan time is not historical time. Mobile details expand via a button, not a swipe gesture. Human listening, real-device touch performance and specialist screen-reader validation remain outstanding. The existing large Three.js/Tone bundles still produce a build-size warning. Static hosts need SPA fallback for `/explore`.
+
+## Landing globe follow-up
+
+The WebGL canvas now fills the entire hero behind its text and controls, preventing internal top/bottom clipping when zooming. Orbit pauses during drag and resumes on release unless manually paused or reduced motion is enabled. Upgraded the NASA texture to 5400 x 2700 and enabled the GPU-supported anisotropic filtering maximum. Build and targeted browser checks verify full-hero bounds, post-drag rotation, manual pause and mobile layout.

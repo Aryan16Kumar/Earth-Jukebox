@@ -176,7 +176,7 @@ export default function App() {
                 rotate={rotate && !reduced && !selected}
                 selected={regions.find((r) => r.id === selected?.id)}
                 onSelect={select}
-                onInteract={() => setRotate(false)}
+
                 onFail={() => setFailed(true)}
               />
             </Suspense>
@@ -275,8 +275,9 @@ export default function App() {
               >
                 <Globe
                   rotate={rotate && !reduced}
+                  presentation
                   onSelect={select}
-                  onInteract={() => setRotate(false)}
+
                   onFail={() => setFailed(true)}
                 />
               </Suspense>

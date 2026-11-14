@@ -698,7 +698,8 @@ details p {
 }
 .landing-globe {
   position: absolute;
-  inset: 155px 12% 130px;
+  inset: 0;
+  z-index: 1;
 }
 .hero-heading {
   position: absolute;
@@ -920,7 +921,9 @@ footer a {
     font-size: 10px;
   }
   .landing-globe {
-    inset: 180px 0 140px;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
   }
   .scene-image pre {
     font-size: 4.4px;
@@ -1203,7 +1206,9 @@ footer a {
     letter-spacing: -0.03em;
   }
   .landing-globe {
-    inset: 245px -24% 170px;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
   }
   .hero-caption {
     top: 260px;
@@ -1321,14 +1326,18 @@ footer a {
   font-size: 8px;
 }
 .landing-globe {
-  top: 205px;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 .hero-heading {
   z-index: 6;
 }
 @media (max-width: 760px) {
   .landing-globe {
-    top: 265px;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
   }
   .globe-label {
     font-size: 11px;
@@ -1375,4 +1384,10 @@ footer a {
   .listening-room:not(.expanded) .sheet-toggle {
     margin: 4px 0;
   }
+}
+
+/* Text and controls stay above the full-hero WebGL surface at every zoom. */
+.hero-caption,
+.landing-foot {
+  z-index: 2;
 }
