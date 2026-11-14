@@ -1391,3 +1391,19 @@ footer a {
 .landing-foot {
   z-index: 2;
 }
+
+/* Keep the audio dock outside scrolling/animated panels: Safari can clip fixed descendants. */
+@media (max-width: 760px) {
+  .transport {
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+  .listening-room {
+    bottom: calc(128px + env(safe-area-inset-bottom, 0px));
+  }
+  .library-drawer {
+    bottom: calc(130px + env(safe-area-inset-bottom, 0px));
+  }
+  .idle-player {
+    bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+  }
+}

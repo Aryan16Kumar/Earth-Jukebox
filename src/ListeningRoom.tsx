@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 import { AudioLines, Pause, Play, Plus, Volume2, X } from "lucide-react";
 import * as Tone from "tone";
@@ -186,84 +187,174 @@ export default function ListeningRoom({
     draw(p);
   }
   return (
-    <section
-      ref={panel}
-      tabIndex={-1}
-      className={`listening-room ${expanded ? "expanded" : ""}`}
-      aria-labelledby="scene-title"
-      onKeyDown={(e) => {
-        if (e.key === "Escape") {
-          e.stopPropagation();
-          onClose();
-        }
-      }}
-    >
-      <div className="room-top">
-        <span className="eyebrow">
-          LISTENING STUDY / {region.category ?? "Night lights"}
-        </span>
-        <button
-          className="icon-button"
-          aria-label="Close listening room"
-          onClick={onClose}
-        >
-          <X size={22} />
-        </button>
-      </div>
-      <div className="room-content">
-        <div className="scene-source-label">
-          NASA SCIENTIFIC VISUALIZATION STUDIO
-        </div>
-        <h2 id="scene-title">
-          {region.name}
-          <span>{region.suffix ?? " at night."}</span>
-        </h2>
-        <p className="room-subtitle">{region.subtitle}</p>
-        {"lat" in region && (
-          <p className="coordinates">
-            {(region as Region).lat}° N / {(region as Region).lon}° E · Regional
-            window
-          </p>
-        )}
-        <button
-          className="sheet-toggle"
-          aria-expanded={expanded}
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? "Collapse details" : "Expand details"}
-        </button>
-        <div className="scene-tabs">
-          <button aria-pressed={!ascii} onClick={() => setAscii(false)}>
-            NASA visual
+    <>
+      <section
+        ref={panel}
+        tabIndex={-1}
+        className={`listening-room ${expanded ? "expanded" : ""}`}
+        aria-labelledby="scene-title"
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.stopPropagation();
+            onClose();
+          }
+        }}
+      >
+        <div className="room-top">
+          <span className="eyebrow">
+            LISTENING STUDY / {region.category ?? "Night lights"}
+          </span>
+          <button
+            className="icon-button"
+            aria-label="Close listening room"
+            onClick={onClose}
+          >
+            <X size={22} />
           </button>
-          <button aria-pressed={ascii} onClick={() => setAscii(true)}>
-            ASCII signal
-          </button>
-          <span>{details.period}</span>
         </div>
-        <div className="scene-image">
-          <canvas
-            ref={canvas}
-            aria-label={`NASA source image: ${region.name}. Analysis uses the displayed crop.`}
-            style={{ visibility: ascii ? "hidden" : "visible" }}
-          />
-          {ascii && <pre aria-hidden="true">{asciiText}</pre>}
-          {details.profile === "stars" ? (
-            <div
-              className="scan-ray"
-              style={{ transform: `rotate(${progress * 360 - 90}deg)` }}
-            />
-          ) : (
-            <div className="scan-line" style={{ left: `${progress * 100}%` }} />
+        <div className="room-content">
+          <div className="scene-source-label">
+            NASA SCIENTIFIC VISUALIZATION STUDIO
+          </div>
+          <h2 id="scene-title">
+            {region.name}
+            <span>{region.suffix ?? " at night."}</span>
+          </h2>
+          <p className="room-subtitle">{region.subtitle}</p>
+          {"lat" in region && (
+            <p className="coordinates">
+              {(region as Region).lat}° N / {(region as Region).lon}° E ·
+              Regional window
+            </p>
           )}
-          <div className="image-caption">
-            {ready
-              ? details.profile === "stars"
-                ? "CLOCKWISE / RADIAL IMAGE SCAN"
-                : "LEFT TO RIGHT / IMAGE SCAN"
-              : "LOADING NASA FRAME"}
+          <button
+            className="sheet-toggle"
+            aria-expanded={expanded}
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? "Collapse details" : "Expand details"}
+          </button>
+          <div className="scene-tabs">
+            <button aria-pressed={!ascii} onClick={() => setAscii(false)}>
+              NASA visual
+            </button>
+            <button aria-pressed={ascii} onClick={() => setAscii(true)}>
+              ASCII signal
+            </button>
+            <span>{details.period}</span>
+          </div>
+          <div className="scene-image">
+            <canvas
+              ref={canvas}
+              aria-label={`NASA source image: ${region.name}. Analysis uses the displayed crop.`}
+              style={{ visibility: ascii ? "hidden" : "visible" }}
+            />
+            {ascii && <pre aria-hidden="true">{asciiText}</pre>}
+            {details.profile === "stars" ? (
+              <div
+                className="scan-ray"
+                style={{ transform: `rotate(${progress * 360 - 90}deg)` }}
+              />
+            ) : (
+              <div
+                className="scan-line"
+                style={{ left: `${progress * 100}%` }}
+              />
+            )}
+            <div className="image-caption">
+              {ready
+                ? details.profile === "stars"
+                  ? "CLOCKWISE / RADIAL IMAGE SCAN"
+                  : "LEFT TO RIGHT / IMAGE SCAN"
+                : "LOADING NASA FRAME"}
+            </div>
+          </div>
+          {error && (
+            <p role="alert" className="error">
+              {error}
+            </p>
+          )}
+          <p className="story">{region.story}</p>
+          <div className="layer-heading">
+            <span className="eyebrow">ISOLATE A VOICE</span>
+            <span>Tap to mute · Double-click to solo</span>
+          </div>
+          <div className="layers">
+            {details.layers.map((name, i) => (
+              <button
+                key={name}
+                aria-pressed={enabled[i]}
+                onClick={() =>
+                  setEnabled((v) => v.map((a, j) => (i === j ? !a : a)))
+                }
+                onDoubleClick={() =>
+                  setEnabled((v) => v.map((_, j) => i === j))
+                }
+              >
+                <span className="layer-number">0{i + 1}</span>
+                <span>
+                  {name}
+                  <small>
+                    {
+                      soundParameters(
+                        features[i],
+                        details.profile,
+                        i,
+                        calibration.current[i],
+                      ).midi
+                    }{" "}
+                    MIDI · {Math.round(features[i].brightness * 100)}% visual
+                    signal
+                  </small>
+                </span>
+                <AudioLines size={20} />
+              </button>
+            ))}
+          </div>
+          <details>
+            <summary>
+              What am I hearing? <Plus size={15} />
+            </summary>
+            <p>{details.explanation}</p>
+            <p>
+              <strong>{soundDesigns[details.profile].name}.</strong>{" "}
+              {soundDesigns[details.profile].description} Pitch, filter opening,
+              note strength, and phrase density respond to the image. Intensity
+              is scaled to a fixed reference computed once from this scene;
+              loudness comparisons across different scenes are not physical
+              comparisons.
+            </p>
+            <p>
+              Listen with one voice, then add the others. Muting all voices
+              produces silence. Scan time explores an image, not a passage of
+              observation dates.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Source, geography & limitations <Plus size={15} />
+            </summary>
+            <p>{details.credit}</p>
+            <p>
+              {details.period}. {details.limitation}
+            </p>
+            <p>
+              The displayed image is cropped to exclude exterior legends and
+              borders where possible. Color profiles suppress neutral labels;
+              background and similarly colored annotations can still affect the
+              signal. Full preprocessing provenance is available in the resource
+              inventory.
+            </p>
+            <a href={details.source} target="_blank" rel="noreferrer">
+              Original NASA resource and full credits
+            </a>
+          </details>
+          <div className="room-footer">
+            ORIGINAL FRAME → SPATIAL FEATURES → MUSICAL RULES → YOUR EARS
           </div>
         </div>
+      </section>
+      {createPortal(
         <div className="transport" aria-label="Audio player">
           <div className="now-playing">
             <AudioLines size={20} />
@@ -318,88 +409,9 @@ export default function ListeningRoom({
               engine.current?.volume(+e.target.value);
             }}
           />
-        </div>
-        {error && (
-          <p role="alert" className="error">
-            {error}
-          </p>
-        )}
-        <p className="story">{region.story}</p>
-        <div className="layer-heading">
-          <span className="eyebrow">ISOLATE A VOICE</span>
-          <span>Tap to mute · Double-click to solo</span>
-        </div>
-        <div className="layers">
-          {details.layers.map((name, i) => (
-            <button
-              key={name}
-              aria-pressed={enabled[i]}
-              onClick={() =>
-                setEnabled((v) => v.map((a, j) => (i === j ? !a : a)))
-              }
-              onDoubleClick={() => setEnabled((v) => v.map((_, j) => i === j))}
-            >
-              <span className="layer-number">0{i + 1}</span>
-              <span>
-                {name}
-                <small>
-                  {
-                    soundParameters(
-                      features[i],
-                      details.profile,
-                      i,
-                      calibration.current[i],
-                    ).midi
-                  }{" "}
-                  MIDI · {Math.round(features[i].brightness * 100)}% visual
-                  signal
-                </small>
-              </span>
-              <AudioLines size={20} />
-            </button>
-          ))}
-        </div>
-        <details>
-          <summary>
-            What am I hearing? <Plus size={15} />
-          </summary>
-          <p>{details.explanation}</p>
-          <p>
-            <strong>{soundDesigns[details.profile].name}.</strong>{" "}
-            {soundDesigns[details.profile].description} Pitch, filter opening,
-            note strength, and phrase density respond to the image. Intensity is
-            scaled to a fixed reference computed once from this scene; loudness
-            comparisons across different scenes are not physical comparisons.
-          </p>
-          <p>
-            Listen with one voice, then add the others. Muting all voices
-            produces silence. Scan time explores an image, not a passage of
-            observation dates.
-          </p>
-        </details>
-        <details>
-          <summary>
-            Source, geography & limitations <Plus size={15} />
-          </summary>
-          <p>{details.credit}</p>
-          <p>
-            {details.period}. {details.limitation}
-          </p>
-          <p>
-            The displayed image is cropped to exclude exterior legends and
-            borders where possible. Color profiles suppress neutral labels;
-            background and similarly colored annotations can still affect the
-            signal. Full preprocessing provenance is available in the resource
-            inventory.
-          </p>
-          <a href={details.source} target="_blank" rel="noreferrer">
-            Original NASA resource and full credits
-          </a>
-        </details>
-        <div className="room-footer">
-          ORIGINAL FRAME → SPATIAL FEATURES → MUSICAL RULES → YOUR EARS
-        </div>
-      </div>
-    </section>
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }
