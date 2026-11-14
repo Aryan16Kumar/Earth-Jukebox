@@ -1,0 +1,48 @@
+{
+  "source": "https://svs.gsfc.nasa.gov/5313/",
+  "observationLabel": "2012 annual average",
+  "sourceFrame": 0,
+  "sourceDimensions": [
+    7680,
+    2160
+  ],
+  "worldCrop": [
+    0,
+    0,
+    3840,
+    2160
+  ],
+  "projection": "equirectangular, resized by EIC; first repeated world",
+  "regions": {
+    "india": {
+      "bounds": [
+        67,
+        6,
+        98,
+        37
+      ],
+      "pixelCrop": [
+        2635,
+        636,
+        2965,
+        1008
+      ],
+      "note": "Rectangular regional window; includes neighboring territory, not a national boundary mask."
+    },
+    "ukraine": {
+      "bounds": [
+        22,
+        44,
+        41,
+        53
+      ],
+      "pixelCrop": [
+        2155,
+        444,
+        2357,
+        552
+      ],
+      "note": "Rectangular regional window; includes neighboring territory, not a national boundary mask."
+    }
+  }
+}

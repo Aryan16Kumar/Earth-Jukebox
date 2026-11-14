@@ -1,0 +1,6 @@
+{
+  "eic": "https://svs.gsfc.nasa.gov/5313/",
+  "video": "https://svs.gsfc.nasa.gov/vis/a000000/a005300/a005313/nightlights_flat_series_and_change_wZooms_13_EIC_2160p30_h265.mp4",
+  "globe": "Derived from EIC frame 0 by scripts/extract_regions.py",
+  "credit": "NASA Scientific Visualization Studio / Kel Elkins. Black Marble: NASA Earth Observatory / Joshua Stevens; Suomi NPP VIIRS data / Miguel Roman, NASA GSFC."
+}
