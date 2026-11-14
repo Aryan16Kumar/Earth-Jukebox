@@ -17,10 +17,17 @@ import {
 } from "lucide-react";
 import * as Tone from "tone";
 import { AudioEngine } from "./audio";
-import { analyzeBand, asciiFrame, mapping, type Feature } from "./analysis";
+import { analyzeBand, asciiFrame, type Feature } from "./analysis";
 import { asset, regions, type Region, type Scene } from "./scenes";
 import { info } from "./catalog";
 import { analyzeScene } from "./catalogAnalysis";
+import {
+  calibrate,
+  defaultCalibration,
+  soundDesigns,
+  soundParameters,
+  type Calibration,
+} from "./soundDesign";
 import ResourceLibrary from "./ResourceLibrary";
 const Globe = lazy(() => import("./Globe"));
 const DURATION = 24;
@@ -33,6 +40,7 @@ function ListeningRoom({
   onClose: () => void;
 }) {
   const details = info(region);
+  const calibration = useRef<Calibration>(defaultCalibration);
   const dialog = useRef<HTMLDialogElement>(null),
     canvas = useRef<HTMLCanvasElement>(null),
     engine = useRef<AudioEngine | null>(null),
@@ -52,6 +60,7 @@ function ListeningRoom({
     start = useRef(0);
   useEffect(() => {
     mask.current = enabled;
+    engine.current?.setEnabled(enabled);
   }, [enabled]);
   useEffect(() => {
     const d = dialog.current!;
@@ -82,7 +91,7 @@ function ListeningRoom({
       cancelled = true;
     };
   }, [region]);
-  function draw(p: number) {
+  function draw(p: number, publish = true) {
     const c = canvas.current,
       im = image.current;
     if (!c || !im) return;
@@ -115,6 +124,7 @@ function ListeningRoom({
           const a = analyzeBand(strip.data, 8, 216, b);
           return { ...a, horizontal: p };
         });
+    if (!publish) return f;
     setFeatures(f);
     const ac = document.createElement("canvas");
     ac.width = 72;
@@ -126,6 +136,9 @@ function ListeningRoom({
   }
   useEffect(() => {
     if (ready) {
+      calibration.current = calibrate(
+        Array.from({ length: 48 }, (_, i) => draw(i / 48, false)!),
+      );
       draw(progress);
       void toggle();
     }
@@ -144,11 +157,13 @@ function ListeningRoom({
       }
       pos.current = p;
       setProgress(p);
-      const step = Math.floor((p * DURATION) / 0.32);
+      const step = Math.floor(
+        (p * DURATION) / soundDesigns[details.profile].step,
+      );
       if (step !== lastNote.current) {
         lastNote.current = step;
         const f = draw(p);
-        if (f) engine.current?.play(f, mask.current);
+        if (f) engine.current?.play(f, mask.current, step);
       }
     }, 32);
     return () => window.clearInterval(id);
@@ -160,9 +175,11 @@ function ListeningRoom({
       return;
     }
     try {
-      if (!engine.current) engine.current = new AudioEngine(details.profile);
+      if (!engine.current)
+        engine.current = new AudioEngine(details.profile, calibration.current);
       await engine.current.start();
       engine.current.volume(volume);
+      engine.current.resume();
       if (pos.current >= 1) {
         pos.current = 0;
         setProgress(0);
@@ -178,6 +195,7 @@ function ListeningRoom({
   }
   function seek(p: number) {
     engine.current?.stop();
+    if (playing) engine.current?.resume();
     pos.current = p;
     setProgress(p);
     start.current = Tone.now() - p * DURATION;
@@ -316,8 +334,16 @@ function ListeningRoom({
               <span>
                 {name}
                 <small>
-                  {mapping(features[i]).midi} MIDI ·{" "}
-                  {Math.round(features[i].brightness * 100)}% visual signal
+                  {
+                    soundParameters(
+                      features[i],
+                      details.profile,
+                      i,
+                      calibration.current[i],
+                    ).midi
+                  }{" "}
+                  MIDI · {Math.round(features[i].brightness * 100)}% visual
+                  signal
                 </small>
               </span>
               <AudioLines size={20} />
@@ -329,6 +355,13 @@ function ListeningRoom({
             What am I hearing? <Plus size={15} />
           </summary>
           <p>{details.explanation}</p>
+          <p>
+            <strong>{soundDesigns[details.profile].name}.</strong>{" "}
+            {soundDesigns[details.profile].description} Pitch, filter opening,
+            note strength, and phrase density respond to the image. Intensity is
+            scaled to a fixed reference computed once from this scene; loudness
+            comparisons across different scenes are not physical comparisons.
+          </p>
           <p>
             Listen with one voice, then add the others. Muting all voices
             produces silence. Scan time explores an image, not a passage of

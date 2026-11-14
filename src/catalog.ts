@@ -18,7 +18,7 @@ export const catalog: Scene[] = [
     story:
       "ECCO2 combines ocean modeling with satellite and in-situ information. Its surface currents are colored by temperature. Explore the contrast between warm and cool rendered flow patterns.",
     explanation:
-      "Warm color excess drives a triangle voice; cool color excess drives a sine voice. Local edge contrast produces a higher texture voice. Color is an artistic proxy, not a temperature reading. Left-to-right scan position controls stereo placement.",
+      "Warm color excess drives an AM voice; cool color excess drives a soft pad. Local edge contrast produces a higher texture voice. Color is an artistic proxy, not a temperature reading. Left-to-right scan position controls stereo placement.",
     limitation: limit,
   },
   {
@@ -133,7 +133,7 @@ export const catalog: Scene[] = [
     story:
       "LIS detected lightning from the International Space Station. NASA visualizes detections with a rolling time window. Our still-image study translates yellow highlights into short, percussive notes—not recordings of thunder or reconstructions of individual strikes.",
     explanation:
-      "Only yellow-dominant pixels contribute. Three horizontal bands trigger short square-wave notes as the cursor reaches their highlights. Neutral clouds, white ISS text, and white annotation lines do not contribute to the yellow detector. A note can represent many rendered pixels.",
+      "Only yellow-dominant pixels contribute. Three horizontal bands trigger short percussion notes as the cursor reaches their highlights. Neutral clouds, white ISS text, and white annotation lines do not contribute to the yellow detector. A note can represent many rendered pixels.",
     limitation:
       limit +
       " Highlight density is not a count or timing of lightning events.",
@@ -155,7 +155,7 @@ export const catalog: Scene[] = [
     story:
       "MERRA-2 blends a model with observations. NASA uses blue shading to show water-vapor transport in three dimensions. Explore how the rendered corridor spans the image, while remembering that the ocean and terrain can also contain blue.",
     explanation:
-      "Blue and cyan channel excess become two gentle voices; local color contrast becomes a third. This is a rendered-image interpretation, not a water-vapor-transport estimate. Static position, rather than atmospheric movement, drives the scan.",
+      "Blue and cyan channel excess become a pad and sine voice; local color contrast becomes a third. This is a rendered-image interpretation, not a water-vapor-transport estimate. Static position, rather than atmospheric movement, drives the scan.",
     limitation:
       limit +
       " The detector cannot completely distinguish moisture from similarly colored background.",
@@ -176,7 +176,7 @@ export const catalog: Scene[] = [
     story:
       "GEDI measures the three-dimensional structure of forests. NASA renders shorter vegetation in brown/dark green and taller vegetation in bright green/white, with height exaggerated. This crop excludes the legend; it is an artistic canopy-color study.",
     explanation:
-      "Green excess drives a soft sine voice; bright green detail drives a second voice; green-weighted local contrast supplies texture. Blue ocean is suppressed. The visual mapping cannot recover tree height in meters, and white-only tall-canopy pixels may be omitted.",
+      "Green excess drives a wooden pluck voice; bright green detail drives a second voice; green-weighted local contrast supplies texture. Blue ocean is suppressed. The visual mapping cannot recover tree height in meters, and white-only tall-canopy pixels may be omitted.",
     limitation:
       limit +
       " Color rendering, illumination, and exaggeration affect the signal.",

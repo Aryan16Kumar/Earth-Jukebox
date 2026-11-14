@@ -55,7 +55,7 @@ Credit: NASA Scientific Visualization Studio and the named visualizers/scientist
 
 ## Processing and audio architecture
 
-Python prepares assets; React/TypeScript/Vite serves the app; React Three Fiber/Drei/Three.js renders the globe; Canvas extracts features; Tone.js produces the audio. The 24-second scan follows the audio-context clock. Color and spatial features select notes in a C pentatonic scale, note strength, and stereo placement. Three synths use envelopes and a master limiter. Lightning uses short square-wave envelopes; forest and moisture use sine voices. ASCII renders the same crop and does not alter audio input.
+Python prepares assets; React/TypeScript/Vite serves the app; React Three Fiber/Drei/Three.js renders the globe; Canvas extracts features; Tone.js produces the audio. The 24-second scan follows the audio-context clock. Color and spatial features select notes from profile-specific scales and pitch registers, note strength, and stereo placement. Three synths use envelopes and a master limiter. Instrument families, pulse grids, envelopes, filters, and delay differ by topic. ASCII renders the same crop and does not alter audio input.
 
 Audio startup depends on browser gesture policy; an explicit Play control is always available. Closing a scene disposes its synth resources.
 
@@ -81,4 +81,25 @@ Human listening/comprehension tests, full screen-reader review, and validation w
 
 Tone.js is the audio dependency. NASA GIBS examples, TwoTone, EarthTunes, Green Corner, and Highcharts Sonification Studio informed research only; their application code was not copied. Highcharts is not a dependency. Other libraries and Google Fonts retain their respective licenses. The local implementation plan is intentionally gitignored.
 
-Verification for this expansion: 23 unit tests pass; the original desktop/mobile browser flow and expanded catalog flow pass. The catalog also verifies nonzero image-derived signals for every bundled source. Screenshots were inspected at desktop and 390px mobile widths. Human listening quality and specialist accessibility validation remain pending.
+Verification for the resource expansion: 23 unit tests passed; the original desktop/mobile browser flow and expanded catalog flow pass. The catalog also verifies nonzero image-derived signals for every bundled source. Screenshots were inspected at desktop and 390px mobile widths. Human listening quality and specialist accessibility validation remain pending.
+
+## Sound identity update
+
+The original engine used almost the same oscillators, note length, pulse, and C-pentatonic register for every image, so differences in the imagery were hard to hear. Each topic now has its own instrument family, pitch register/scale, pulse grid, envelope lengths, filtering, and delay:
+
+| Topic                          | Sound character                      |
+| ------------------------------ | ------------------------------------ |
+| Night lights                   | Staggered plucks and city chimes     |
+| Surface currents / temperature | Warm AM tones, cool pad, FM accents  |
+| Aerosols                       | Interleaved filtered reeds           |
+| Air quality                    | Dry bass and clipped pulses          |
+| Perpetual Ocean                | Rolling FM bubbles and low tones     |
+| Carbon dioxide                 | Slow low-register resonance          |
+| Lightning                      | Membrane hits and sharp clicks       |
+| Atmospheric river              | Overlapping soft swells and droplets |
+| Forest canopy                  | Wooden plucks and call-and-response  |
+| Caldwell 73                    | High ringing FM bells                |
+
+These instrumental choices are artistic conventions, not natural sounds measured by the satellite. Local image strength controls filter opening, pitch, note strength, and whether weaker phrases leave gaps. A fixed per-scene reference is computed once from 48 image samples; calibration is not recomputed at every scan step. This improves within-scene expression but means loudness between scenes is not a physical comparison. Each sound profile also has an artistic output-level trim.
+
+`src/soundDesign.ts` owns the musical rules. `renderAudioPreview` uses the same engine in an offline audio context for regression testing. The browser audio test writes eight-second comparison WAVs to ignored `test-results/audio/` and checks non-silence, clipping, distinct waveforms, and low/high-register separation. Those checks do not substitute for human listening tests.
