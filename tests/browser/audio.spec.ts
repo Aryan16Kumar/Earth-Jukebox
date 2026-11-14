@@ -8,7 +8,7 @@ test("render real-image audio and compare audible characteristics", async ({
   test.setTimeout(240000);
   await page.goto("/");
   await page
-    .getByRole("heading", { name: "A planet worth listening to." })
+    .getByRole("heading", { name: "THE PLANET HAS A SOUNDTRACK." })
     .waitFor();
   const scenes = [...regions, ...catalog];
   await mkdir("test-results/audio", { recursive: true });

@@ -8,7 +8,7 @@ Explore NASA imagery through an interactive 3D Earth, a searchable listening lib
 - Eight additional Earth-science resources: surface currents/temperature, GEOS aerosols, air quality, Perpetual Ocean 2, DYAMOND CO2, ISS lightning, atmospheric rivers, and GEDI canopy height.
 - Caldwell 73 as a separate astronomy teaching exercise with a clockwise radial scan.
 - EIC Content Database entry point in the library; category filtering, search, source links, per-track explanations and limitations.
-- Three controllable synth voices, volume, pause/replay, seeking, ASCII rendering, keyboard-accessible dialogs and responsive layouts.
+- Three controllable synth voices, volume, pause/replay, seeking, ASCII rendering, keyboard-accessible detail panels, an audio-reactive waveform and responsive layouts.
 
 Each visual resource currently uses a **published still or extracted frame**. Sound is generated dynamically by scanning image space. The app does not yet play complete historical animations, query live NASA data, or reconstruct calibrated physical measurements. Geographic globe selection is available for the two validated night-lights regions; other camera views remain in the library rather than being given invented map coordinates.
 
@@ -25,14 +25,14 @@ npx playwright install chromium
 npx playwright test
 ```
 
-The static production output is `dist/`. Relative base paths support subdirectory deployment. Public hosting is not configured automatically. No database, backend API, paid service, or API key is required.
+The static production output is `dist/`. The landing page is `/`; the product is `/explore`. Configure your host to serve `index.html` for application routes (SPA fallback). Set Vite base to your deployment path for subdirectory hosting. Public hosting is not configured automatically. No database, backend API, paid service, or API key is required.
 
 ## NASA resource coverage
 
 | Official resource                            | Use                                                                            | Original source                                                            |
 | -------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
 | Earth Information Center Content Database    | Source directory linked from the listening library                             | [EIC gallery](https://svs.gsfc.nasa.gov/gallery/earth-information-center/) |
-| Night Lights 2012–2023, EIC Version          | Globe texture; two regional sonifications of frame 0, labeled 2012             | [SVS 5313](https://svs.gsfc.nasa.gov/5313/)                                |
+| Night Lights 2012–2023, EIC Version          | Two regional sonifications of frame 0, labeled 2012             | [SVS 5313](https://svs.gsfc.nasa.gov/5313/)                                |
 | Global Sea Surface Currents and Temperature  | Warm/cool color and edge texture voices                                        | [SVS 3912](https://svs.gsfc.nasa.gov/3912/)                                |
 | GEOS Aerosols                                | Warm/magenta, blue, green visual groups                                        | [SVS 5572](https://svs.gsfc.nasa.gov/5572/)                                |
 | Air Quality Model Runs                       | Three color-excess voices; not pollutant concentrations                        | [SVS 5533](https://svs.gsfc.nasa.gov/5533/)                                |
@@ -103,3 +103,11 @@ The original engine used almost the same oscillators, note length, pulse, and C-
 These instrumental choices are artistic conventions, not natural sounds measured by the satellite. Local image strength controls filter opening, pitch, note strength, and whether weaker phrases leave gaps. A fixed per-scene reference is computed once from 48 image samples; calibration is not recomputed at every scan step. This improves within-scene expression but means loudness between scenes is not a physical comparison. Each sound profile also has an artistic output-level trim.
 
 `src/soundDesign.ts` owns the musical rules. `renderAudioPreview` uses the same engine in an offline audio context for regression testing. The browser audio test writes eight-second comparison WAVs to ignored `test-results/audio/` and checks non-silence, clipping, distinct waveforms, and low/high-register separation. Those checks do not substitute for human listening tests.
+
+## Immersive UI redesign
+
+The separate landing page introduces the experience with a rotating Earth and a Canvas ASCII field. `/explore` contains the globe, regional shortcuts, unified search, NASA library, nonmodal detail panel (expandable bottom sheet on phones), and persistent audio dock. The dock visualizes the actual output through a read-only Tone analyser. Image analysis, calibration, instrument profiles and source assets are unchanged.
+
+The globe uses NASA Blue Marble Next Generation (May 2004), downloaded from NASA Earth Observatory. This 5400 x 2700 context texture is separate from the images used for sonification. Provenance is recorded in `public/assets/globe-provenance.json`. It is a global texture, not streamed Google Earth terrain or street-level imagery.
+
+Reduced motion stops automatic orbit and ASCII animation; search and controls remain immediate. Reduced transparency and high contrast receive explicit surface treatments. No new package dependencies were added. See `UI_REDESIGN_SUMMARY.md` for scope, checks and limitations.
