@@ -74,7 +74,7 @@ test("every NASA resource loads, maps pixels, exposes source and renders ASCII",
       "NASA SCIENTIFIC",
     );
 
-    await expect(room.locator(".play-button")).toBeEnabled();
+    await expect(page.locator(".play-button")).toBeEnabled();
     if (
       await page.getByRole("button", { name: "Pause sonification" }).isVisible()
     )

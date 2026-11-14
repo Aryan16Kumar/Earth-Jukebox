@@ -27,3 +27,7 @@ The globe uses a 5400 x 2700 global NASA texture, not streamed terrain or Google
 ## Landing globe follow-up
 
 The WebGL canvas now fills the entire hero behind its text and controls, preventing internal top/bottom clipping when zooming. Orbit pauses during drag and resumes on release unless manually paused or reduced motion is enabled. Upgraded the NASA texture to 5400 x 2700 and enabled the GPU-supported anisotropic filtering maximum. Build and targeted browser checks verify full-hero bounds, post-drag rotation, manual pause and mobile layout.
+
+## iPhone audio dock fix
+
+Moved the audio dock into a React portal attached to document.body so animated, scrollable source panels cannot clip or reposition fixed controls in Safari. Added bottom safe-area offsets and viewport-fit=cover. Playback and scientific mappings are unchanged. Physical iPhone verification remains necessary after Vercel redeploys.
