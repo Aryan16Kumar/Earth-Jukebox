@@ -1,0 +1,101 @@
+[
+  {
+    "id": "currents",
+    "source": "https://svs.gsfc.nasa.gov/3912/",
+    "imageSource": "https://svs.gsfc.nasa.gov/vis/a000000/a003900/a003912/flat_global_ecco2_2028x1024.25000.jpg",
+    "image": "catalog/currents.jpg",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "processing": "Resized NASA published still; analysis ROI specified separately; no raw physical quantities reconstructed."
+  },
+  {
+    "id": "aerosols",
+    "source": "https://svs.gsfc.nasa.gov/5572/",
+    "imageSource": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005572/Aerosols_AnnotationsLabel_2048x1024_30p_0000.png",
+    "image": "catalog/aerosols.jpg",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "processing": "Resized NASA published still; analysis ROI specified separately; no raw physical quantities reconstructed."
+  },
+  {
+    "id": "air-quality",
+    "source": "https://svs.gsfc.nasa.gov/5533/",
+    "imageSource": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005533/AirQuality_Sphere_1920x1080_0000.png",
+    "image": "catalog/air-quality.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "processing": "Resized NASA published still; analysis ROI specified separately; no raw physical quantities reconstructed."
+  },
+  {
+    "id": "perpetual",
+    "source": "https://svs.gsfc.nasa.gov/5425/",
+    "imageSource": "https://svs.gsfc.nasa.gov/vis/a000000/a005400/a005425/perpetual_ocean2_CLOSE_093_clean_noDate_1080p_carousel.jpg",
+    "image": "catalog/perpetual.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "processing": "Resized NASA published still; analysis ROI specified separately; no raw physical quantities reconstructed."
+  },
+  {
+    "id": "co2",
+    "source": "https://svs.gsfc.nasa.gov/5196/",
+    "imageSource": "https://svs.gsfc.nasa.gov/vis/a000000/a005100/a005196/dyamondPointCloud_12-1-2023b_dyamond_co2_anim_globe_orbit_3x3Hyperwall.00200_print.jpg",
+    "image": "catalog/co2.jpg",
+    "dimensions": [
+      1024,
+      576
+    ],
+    "processing": "Resized NASA published still; analysis ROI specified separately; no raw physical quantities reconstructed."
+  },
+  {
+    "id": "lightning",
+    "source": "https://svs.gsfc.nasa.gov/5011/",
+    "imageSource": "https://svs.gsfc.nasa.gov/vis/a000000/a005000/a005011/iss_lightning_preview.jpg",
+    "image": "catalog/lightning.jpg",
+    "dimensions": [
+      1024,
+      576
+    ],
+    "processing": "Resized NASA published still; analysis ROI specified separately; no raw physical quantities reconstructed."
+  },
+  {
+    "id": "river",
+    "source": "https://svs.gsfc.nasa.gov/4960/",
+    "imageSource": "https://svs.gsfc.nasa.gov/vis/a000000/a004900/a004960/atmos_river.0324_rfm23_2021-11-29_1351.04370_print.jpg",
+    "image": "catalog/river.jpg",
+    "dimensions": [
+      1024,
+      576
+    ],
+    "processing": "Resized NASA published still; analysis ROI specified separately; no raw physical quantities reconstructed."
+  },
+  {
+    "id": "forest",
+    "source": "https://svs.gsfc.nasa.gov/4950/",
+    "imageSource": "https://svs.gsfc.nasa.gov/vis/a000000/a004900/a004950/GEDI_global_w_colorbar_0900_print.jpg",
+    "image": "catalog/forest.jpg",
+    "dimensions": [
+      1024,
+      576
+    ],
+    "processing": "Resized NASA published still; analysis ROI specified separately; no raw physical quantities reconstructed."
+  },
+  {
+    "id": "caldwell",
+    "source": "https://svs.gsfc.nasa.gov/13786/",
+    "imageSource": "https://svs.gsfc.nasa.gov/vis/a010000/a013700/a013786/wide.jpg",
+    "image": "catalog/caldwell.jpg",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "processing": "Resized NASA published still; analysis ROI specified separately; no raw physical quantities reconstructed."
+  }
+]

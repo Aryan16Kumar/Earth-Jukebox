@@ -1,12 +1,35 @@
-﻿export type Region = {
+export type Profile =
+  | "night"
+  | "thermal"
+  | "aerosol"
+  | "air"
+  | "flow"
+  | "carbon"
+  | "lightning"
+  | "moisture"
+  | "canopy"
+  | "stars";
+export type Scene = {
   id: string;
   name: string;
   subtitle: string;
+  image: string;
+  story: string;
+  profile?: Profile;
+  category?: string;
+  source?: string;
+  period?: string;
+  credit?: string;
+  roi?: [number, number, number, number];
+  layers?: [string, string, string];
+  explanation?: string;
+  limitation?: string;
+  suffix?: string;
+};
+export type Region = Scene & {
   lat: number;
   lon: number;
   bounds: [number, number, number, number];
-  image: string;
-  story: string;
 };
 export const regions: Region[] = [
   {

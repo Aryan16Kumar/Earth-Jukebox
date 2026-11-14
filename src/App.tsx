@@ -18,7 +18,10 @@ import {
 import * as Tone from "tone";
 import { AudioEngine } from "./audio";
 import { analyzeBand, asciiFrame, mapping, type Feature } from "./analysis";
-import { asset, regions, type Region } from "./scenes";
+import { asset, regions, type Region, type Scene } from "./scenes";
+import { info } from "./catalog";
+import { analyzeScene } from "./catalogAnalysis";
+import ResourceLibrary from "./ResourceLibrary";
 const Globe = lazy(() => import("./Globe"));
 const DURATION = 24;
 const empty: Feature = { brightness: 0, vertical: 0.5, horizontal: 0.5 };
@@ -26,9 +29,10 @@ function ListeningRoom({
   region,
   onClose,
 }: {
-  region: Region;
+  region: Scene;
   onClose: () => void;
 }) {
+  const details = info(region);
   const dialog = useRef<HTMLDialogElement>(null),
     canvas = useRef<HTMLCanvasElement>(null),
     engine = useRef<AudioEngine | null>(null),
@@ -85,19 +89,38 @@ function ListeningRoom({
     const ctx = c.getContext("2d", { willReadFrequently: true })!;
     c.width = 384;
     c.height = 216;
-    ctx.drawImage(im, 0, 0, 384, 216);
+    const [rx, ry, rw, rh] = region.roi ?? [0, 0, 1, 1];
+    ctx.drawImage(
+      im,
+      rx * im.width,
+      ry * im.height,
+      rw * im.width,
+      rh * im.height,
+      0,
+      0,
+      384,
+      216,
+    );
     const x = Math.min(376, Math.floor(p * 376));
     const strip = ctx.getImageData(x, 0, 8, 216);
-    const f = [0, 1, 2].map((b) => {
-      const a = analyzeBand(strip.data, 8, 216, b);
-      return { ...a, horizontal: p };
-    });
+    const f = region.profile
+      ? analyzeScene(
+          ctx.getImageData(0, 0, 384, 216).data,
+          384,
+          216,
+          p,
+          region.profile,
+        )
+      : [0, 1, 2].map((b) => {
+          const a = analyzeBand(strip.data, 8, 216, b);
+          return { ...a, horizontal: p };
+        });
     setFeatures(f);
     const ac = document.createElement("canvas");
     ac.width = 72;
     ac.height = 30;
     const ax = ac.getContext("2d")!;
-    ax.drawImage(im, 0, 0, 72, 30);
+    ax.drawImage(c, 0, 0, 72, 30);
     setAsciiText(asciiFrame(ax.getImageData(0, 0, 72, 30).data, 72, 30));
     return f;
   }
@@ -137,7 +160,7 @@ function ListeningRoom({
       return;
     }
     try {
-      if (!engine.current) engine.current = new AudioEngine();
+      if (!engine.current) engine.current = new AudioEngine(details.profile);
       await engine.current.start();
       engine.current.volume(volume);
       if (pos.current >= 1) {
@@ -173,7 +196,7 @@ function ListeningRoom({
     >
       <div className="room-top">
         <span className="eyebrow">
-          LISTENING STUDY / {region.id === "india" ? "01" : "02"}
+          LISTENING STUDY / {region.category ?? "Night lights"}
         </span>
         <button
           className="icon-button"
@@ -184,31 +207,44 @@ function ListeningRoom({
         </button>
       </div>
       <div className="room-content">
-        <div className="eyebrow muted">BLACK MARBLE · NASA / NOAA VIIRS</div>
+        <div className="scene-source-label">
+          NASA SCIENTIFIC VISUALIZATION STUDIO
+        </div>
         <h2 id="scene-title">
           {region.name}
-          <span> at night.</span>
+          <span>{region.suffix ?? " at night."}</span>
         </h2>
         <p className="room-subtitle">{region.subtitle}</p>
         <div className="scene-tabs">
           <button aria-pressed={!ascii} onClick={() => setAscii(false)}>
-            Satellite frame
+            NASA visual
           </button>
           <button aria-pressed={ascii} onClick={() => setAscii(true)}>
             ASCII signal <span>↗</span>
           </button>
-          <span>2012 · ANNUAL AVERAGE</span>
+          <span>{details.period}</span>
         </div>
         <div className="scene-image">
           <canvas
             ref={canvas}
-            aria-label={`NASA EIC night-lights frame cropped to the ${region.name} regional window`}
+            aria-label={`NASA source image: ${region.name}. Analysis uses the displayed crop.`}
             style={{ visibility: ascii ? "hidden" : "visible" }}
           />
           {ascii && <pre aria-hidden="true">{asciiText}</pre>}
-          <div className="scan-line" style={{ left: `${progress * 100}%` }} />
+          {details.profile === "stars" ? (
+            <div
+              className="scan-ray"
+              style={{ transform: `rotate(${progress * 360 - 90}deg)` }}
+            />
+          ) : (
+            <div className="scan-line" style={{ left: `${progress * 100}%` }} />
+          )}
           <div className="image-caption">
-            {ready ? "WEST → EAST / SPATIAL SCAN" : "LOADING NASA FRAME…"}
+            {ready
+              ? details.profile === "stars"
+                ? "CLOCKWISE / RADIAL IMAGE SCAN"
+                : "LEFT TO RIGHT / IMAGE SCAN"
+              : "LOADING NASA FRAME"}
           </div>
         </div>
         <div className="transport">
@@ -267,7 +303,7 @@ function ListeningRoom({
           <span>Tap to mute · Double-click to solo</span>
         </div>
         <div className="layers">
-          {["Northern band", "Middle band", "Southern band"].map((name, i) => (
+          {details.layers.map((name, i) => (
             <button
               key={name}
               aria-pressed={enabled[i]}
@@ -281,8 +317,7 @@ function ListeningRoom({
                 {name}
                 <small>
                   {mapping(features[i]).midi} MIDI ·{" "}
-                  {Math.round(features[i].brightness * 100)}% rendered
-                  brightness
+                  {Math.round(features[i].brightness * 100)}% visual signal
                 </small>
               </span>
               <AudioLines size={20} />
@@ -293,43 +328,30 @@ function ListeningRoom({
           <summary>
             What am I hearing? <Plus size={15} />
           </summary>
+          <p>{details.explanation}</p>
           <p>
-            The cursor scans west to east over 24 seconds. Three horizontal
-            image bands become three voices. Brighter rendered pixels increase
-            note strength; higher light concentrations produce higher pentatonic
-            notes. The cursor moves sound from left to right. Darkness is quiet.
-            These are artistic image mappings, not calibrated radiance
-            measurements.
-          </p>
-          <p>
-            Listen once with just one voice, then add the others. Muting all
-            voices produces silence. The scan measures space, not a passage of
-            years.
+            Listen with one voice, then add the others. Muting all voices
+            produces silence. Scan time explores an image, not a passage of
+            observation dates.
           </p>
         </details>
         <details>
           <summary>
             Source, geography & limitations <Plus size={15} />
           </summary>
+          <p>{details.credit}</p>
           <p>
-            Original: NASA Scientific Visualization Studio, Kel Elkins. EIC
-            visualization 5313, first frame (2012 annual average). Rectangular
-            window: {region.bounds.join(", ")}° (west, south, east, north);
-            includes neighboring territory. A country outline is not used as an
-            analysis mask.
+            {details.period}. {details.limitation}
           </p>
           <p>
-            Black Marble imagery: NASA Earth Observatory / Joshua Stevens, using
-            Suomi NPP VIIRS data from Miguel Román, NASA GSFC. The original
-            animation compares 2012–2023; this prototype sonifies one 2012
-            frame. No trend or causal inference is made.
+            The displayed image is cropped to exclude exterior legends and
+            borders where possible. Color profiles suppress neutral labels;
+            background and similarly colored annotations can still affect the
+            signal. Full preprocessing provenance is available in the resource
+            inventory.
           </p>
-          <a
-            href="https://svs.gsfc.nasa.gov/5313/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            View original NASA EIC visualization ↗
+          <a href={details.source} target="_blank" rel="noreferrer">
+            Original NASA resource and full credits
           </a>
         </details>
         <div className="room-footer">
@@ -344,10 +366,10 @@ export default function App() {
     window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
   const [rotate, setRotate] = useState(!reduced.current),
-    [selected, setSelected] = useState<Region | null>(null),
+    [selected, setSelected] = useState<Scene | null>(null),
     [failed, setFailed] = useState(false),
     [about, setAbout] = useState(false);
-  function selectRegion(r: Region) {
+  function selectRegion(r: Scene) {
     setRotate(false);
     setSelected(r);
     // Open the story immediately; audio permissions must never block its UI.
@@ -512,6 +534,7 @@ export default function App() {
           </span>
         </div>
       </section>
+      <ResourceLibrary onSelect={selectRegion} />
       <section className="method-section">
         <pre aria-hidden="true">
           {
@@ -526,7 +549,7 @@ export default function App() {
             <em>A way to listen.</em>
           </h2>
           <p>
-            Brightness becomes expression. Position becomes pitch. A satellite
+            Brightness becomes expression. Position becomes pitch. A NASA visual
             frame becomes a small, evolving composition—with every musical
             choice explained.
           </p>
@@ -599,21 +622,21 @@ function About({ onClose }: { onClose: () => void }) {
       <span className="eyebrow">BEHIND THE SOUND</span>
       <h2 id="about-title">A transparent translation.</h2>
       <p>
-        Earth Jukebox translates pixels from NASA’s Earth Information Center
-        night-lights visualization into original sound. No generated song or
-        prerecorded soundtrack stands in for the imagery.
+        Earth Jukebox translates NASA visual frames into original synthesized
+        sound. The night-lights globe opens geographic studies; the resource
+        library explores oceans, aerosols, air quality, carbon dioxide,
+        lightning, atmospheric rivers, and forests.
       </p>
       <p>
-        Each regional window is scanned west to east. Three horizontal bands
-        form three musical voices; brightness drives note strength and vertical
-        concentration drives pitch. Listen to a single voice, then layer the
-        others.
+        Every resource has an explained mapping and source link. Color excess,
+        brightness, edges, and spatial distribution control the voices. Caldwell
+        73 demonstrates radial sonification as a separate astronomy lesson.
       </p>
       <p>
-        The globe and both regional windows use the first EIC frame, showing
-        2012 annual-average night lights. This prototype explores spatial
-        patterns. It does not sonify the full 2012–2023 time series or infer the
-        causes of changes.
+        These are still-image studies, not full historical playback or
+        calibrated measurements. Rendered colors, background, camera angle, and
+        artistic normalization influence what you hear. The EIC content database
+        is linked as the source directory.
       </p>
       <p>
         Keyboard controls, labeled dialogs, reduced motion, and descriptive text

@@ -1,11 +1,12 @@
 ﻿import * as Tone from "tone";
 import { mapping, type Feature } from "./analysis";
+import { type Profile } from "./scenes";
 export class AudioEngine {
   voices: Tone.Synth[] = [];
   pans: Tone.Panner[] = [];
   master: Tone.Volume;
   limiter: Tone.Limiter;
-  constructor() {
+  constructor(profile: Profile = "night") {
     this.master = new Tone.Volume(-12);
     this.limiter = new Tone.Limiter(-3).toDestination();
     this.master.connect(this.limiter);
@@ -14,8 +15,20 @@ export class AudioEngine {
       this.pans.push(p);
       this.voices.push(
         new Tone.Synth({
-          oscillator: { type: i === 1 ? "sine" : "triangle" },
-          envelope: { attack: 0.06, decay: 0.15, sustain: 0.1, release: 0.45 },
+          oscillator: {
+            type:
+              profile === "lightning"
+                ? "square"
+                : profile === "canopy" || profile === "moisture"
+                  ? "sine"
+                  : i === 1
+                    ? "sine"
+                    : "triangle",
+          },
+          envelope:
+            profile === "lightning"
+              ? { attack: 0.005, decay: 0.08, sustain: 0, release: 0.08 }
+              : { attack: 0.06, decay: 0.15, sustain: 0.1, release: 0.45 },
         }).connect(p),
       );
     }
