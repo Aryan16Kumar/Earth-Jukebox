@@ -39,3 +39,7 @@ Added two-date 2012/2023 comparison controls to India and Ukraine with synchroni
 ## Image display simplification
 
 Removed the per-study ASCII image toggle and its per-scan conversion. NASA imagery remains visible throughout playback and date comparison. The landing-page ambient ASCII background remains.
+
+## Loading screen
+
+Added an initial full-screen dark/lime loading surface with orbital linework and a restrained signal animation. Dismissal follows the first rendered globe frame after its texture loads; no simulated progress percentage or minimum wait. A continue action and existing globe error handling prevent trapping visitors. Reduced motion receives a static equivalent. No new dependencies.

@@ -3,6 +3,16 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, useTexture, Html, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import { regions, asset, type Region } from "./scenes";
+function ReadySignal({ onReady }: { onReady?: () => void }) {
+  const sent = useRef(false);
+  useFrame(() => {
+    if (!sent.current) {
+      sent.current = true;
+      requestAnimationFrame(() => onReady?.());
+    }
+  });
+  return null;
+}
 function position(
   lat: number,
   lon: number,
@@ -166,8 +176,10 @@ export default function Globe({
   onFail,
   selected,
   presentation = false,
+  onReady,
 }: {
   presentation?: boolean;
+  onReady?: () => void;
   selected?: Region;
   rotate: boolean;
   onSelect: (r: Region) => void;
@@ -198,6 +210,7 @@ export default function Globe({
         onPointerDown={interact}
       >
         <Suspense fallback={null}>
+          <ReadySignal onReady={onReady} />
           <ambientLight intensity={1.5} />
           <directionalLight position={[-3, 4, 5]} intensity={1.9} />
           <Planet
