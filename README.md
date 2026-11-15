@@ -111,3 +111,11 @@ The separate landing page introduces the experience with a rotating Earth and a 
 The globe uses NASA Blue Marble Next Generation (May 2004), downloaded from NASA Earth Observatory. This 5400 x 2700 context texture is separate from the images used for sonification. Provenance is recorded in `public/assets/globe-provenance.json`. It is a global texture, not streamed Google Earth terrain or street-level imagery.
 
 Reduced motion stops automatic orbit and ASCII animation; search and controls remain immediate. Reduced transparency and high contrast receive explicit surface treatments. No new package dependencies were added. See `UI_REDESIGN_SUMMARY.md` for scope, checks and limitations.
+
+## Dated night-lights comparison
+
+India and Ukraine now offer 2012 and 2023 annual-average snapshots from NASA SVS 5313. Choose a regional study, play, then switch years: the visual, ASCII and input sound features update at the same spatial scan position. Both snapshots share a pooled audio calibration computed from 48 spatial samples per year; this keeps the artistic audio reference consistent within each regional comparison. It does not produce calibrated radiance or establish a cause of change. This is a two-date comparison, not a continuous twelve-year reconstruction.
+
+The 2023 image comes from frame 240 (8 seconds at 30 fps) of the original EIC movie, before the colored difference-map transition. Its year label was visually checked. `public/assets/nightlights-timeline.json` records provenance; `python scripts/prepare_timeline.py` reproduces the derivatives from `.cache/eic.mp4`.
+
+Quick demo: Enter Earth ? India ? Play ? 2023 ? 2012. On phones the year buttons are in the regional panel; the player remains pinned below it.

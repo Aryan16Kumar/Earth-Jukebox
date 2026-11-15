@@ -1407,3 +1407,49 @@ footer a {
     bottom: calc(15px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+.year-comparison {
+  margin: 18px 0;
+}
+.year-comparison strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.year-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.year-buttons button {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid #c5f27744;
+  border-radius: 4px;
+  color: #c5f277;
+}
+.year-buttons button[aria-pressed="true"] {
+  background: #c5f277;
+  color: #10200c;
+}
+.year-comparison p {
+  font-size: 11px;
+  color: #c5f277;
+  margin: 10px 0 6px;
+}
+.year-comparison small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #a3adb4;
+}
+@media (max-width: 760px) {
+  .listening-room:not(.expanded) .year-comparison {
+    margin: 10px 0;
+  }
+  .listening-room:not(.expanded) .year-comparison small {
+    display: none;
+  }
+  .listening-room:has(.year-comparison):not(.expanded) {
+    max-height: 43dvh;
+  }
+}

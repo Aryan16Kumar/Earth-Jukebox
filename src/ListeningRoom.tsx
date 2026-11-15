@@ -24,7 +24,18 @@ export default function ListeningRoom({
   region: Scene;
   onClose: () => void;
 }) {
-  const details = info(region);
+  const temporal = region.id === "india" || region.id === "ukraine";
+  const [year, setYear] = useState(2012);
+  const comparison = useRef<HTMLImageElement[]>([]);
+  const baseDetails = info(region);
+  const details = temporal
+    ? {
+        ...baseDetails,
+        period: `${year} / annual average`,
+        limitation:
+          "Two annual-average rendered snapshots from the EIC sequence, using identical regional windows. Scan time is spatial. Rendered brightness is not calibrated radiance and cannot establish the cause of a change.",
+      }
+    : baseDetails;
   const [expanded, setExpanded] = useState(false);
   const calibration = useRef<Calibration>(defaultCalibration);
   const panel = useRef<HTMLElement>(null),
@@ -59,25 +70,40 @@ export default function ListeningRoom({
   }, []);
   useEffect(() => {
     let cancelled = false;
-    const img = new Image();
     setReady(false);
-    img.onload = () => {
-      if (cancelled) return;
-      image.current = img;
-      setReady(true);
-    };
-    img.onerror = () => {
-      if (!cancelled)
-        setError("This scene could not load. Close it and try again.");
-    };
-    img.src = asset(region.image);
+    const paths = temporal
+      ? [region.image, `${region.id}-2023.jpg`]
+      : [region.image];
+    Promise.all(
+      paths.map(
+        (path) =>
+          new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = asset(path);
+          }),
+      ),
+    )
+      .then((images) => {
+        if (cancelled) return;
+        comparison.current = images;
+        image.current = images[0];
+        setReady(true);
+      })
+      .catch(() => {
+        if (!cancelled)
+          setError(
+            "NASA comparison could not load. Close this study and try again.",
+          );
+      });
     return () => {
       cancelled = true;
     };
   }, [region]);
-  function draw(p: number, publish = true) {
+  function draw(p: number, publish = true, source = image.current) {
     const c = canvas.current,
-      im = image.current;
+      im = source;
     if (!c || !im) return;
     const ctx = c.getContext("2d", { willReadFrequently: true })!;
     c.width = 384;
@@ -121,7 +147,9 @@ export default function ListeningRoom({
   useEffect(() => {
     if (ready) {
       calibration.current = calibrate(
-        Array.from({ length: 48 }, (_, i) => draw(i / 48, false)!),
+        comparison.current.flatMap((im) =>
+          Array.from({ length: 48 }, (_, i) => draw(i / 48, false, im)!),
+        ),
       );
       draw(progress);
       void toggle();
@@ -186,6 +214,15 @@ export default function ListeningRoom({
     lastNote.current = -1;
     draw(p);
   }
+  function chooseYear(next: number) {
+    if (!ready || next === year) return;
+    engine.current?.stop();
+    image.current = comparison.current[next === 2012 ? 0 : 1];
+    setYear(next);
+    lastNote.current = -1;
+    draw(pos.current);
+    if (playing) engine.current?.resume();
+  }
   return (
     <>
       <section
@@ -234,6 +271,33 @@ export default function ListeningRoom({
           >
             {expanded ? "Collapse details" : "Expand details"}
           </button>
+          {temporal && (
+            <div
+              className="year-comparison"
+              aria-label="Compare annual night lights"
+            >
+              <strong>Hear a decade of change</strong>
+              <div className="year-buttons">
+                {[2012, 2023].map((y) => (
+                  <button
+                    key={y}
+                    disabled={!ready}
+                    aria-pressed={year === y}
+                    onClick={() => chooseYear(y)}
+                  >
+                    {y}
+                  </button>
+                ))}
+              </div>
+              <p role="status">
+                {year} annual average / Same place, same audio scale.
+              </p>
+              <small>
+                Switch years while listening. The 24-second scan moves across
+                the image, not through years.
+              </small>
+            </div>
+          )}
           <div className="scene-tabs">
             <button aria-pressed={!ascii} onClick={() => setAscii(false)}>
               NASA visual
@@ -320,7 +384,8 @@ export default function ListeningRoom({
               <strong>{soundDesigns[details.profile].name}.</strong>{" "}
               {soundDesigns[details.profile].description} Pitch, filter opening,
               note strength, and phrase density respond to the image. Intensity
-              is scaled to a fixed reference computed once from this scene;
+              is scaled to a fixed reference computed once from{" "}
+              {temporal ? "both annual snapshots together" : "this scene"};
               loudness comparisons across different scenes are not physical
               comparisons.
             </p>
@@ -361,7 +426,8 @@ export default function ListeningRoom({
             <span>
               {region.name}
               <small>
-                {region.category ?? "Night lights"} / image sonification
+                {region.category ?? "Night lights"} /{" "}
+                {temporal ? year : "image sonification"}
               </small>
             </span>
           </div>
