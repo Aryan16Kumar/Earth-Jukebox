@@ -1,27 +1,34 @@
-﻿import { test, expect } from '@playwright/test';
-test('dated snapshots update the actual image, sound context and ASCII',async({page})=>{
- await page.goto('/explore');
- await page.locator('.region-card').first().click();
- const later=page.getByRole('button',{name:'2023',exact:true});
- await expect(later).toBeEnabled({timeout:30000});
- const frame=()=>page.locator('.scene-image canvas').evaluate((c:HTMLCanvasElement)=>c.toDataURL());
- const before=await frame();
- await page.getByRole('button',{name:'Pause sonification'}).click();
- await page.getByLabel('Spatial scan position').fill('0.45');
- await later.click();
- await expect(later).toHaveAttribute('aria-pressed','true');
- await expect(page.locator('.scene-tabs')).toContainText('2023');
- expect(await frame()).not.toBe(before);
- await expect(page.getByLabel('Spatial scan position')).toHaveValue('0.45');
- await page.getByRole('button',{name:'Play sonification'}).click();
- await expect(page.getByRole('button',{name:'Pause sonification'})).toBeVisible();
- await page.getByRole('button',{name:'ASCII signal'}).click();
- await expect(page.locator('.scene-image pre')).not.toBeEmpty();
- await page.screenshot({path:'test-results/nightlights-2023-desktop.png'});
- await page.setViewportSize({width:390,height:844});
- await expect(page.getByRole('button',{name:'2012',exact:true})).toBeInViewport();
- await expect(page.locator('.play-button')).toBeInViewport();
- await page.screenshot({path:'test-results/nightlights-2023-mobile.png'});
- await page.getByRole('button',{name:'2012',exact:true}).click();
- await expect(page.locator('.scene-tabs')).toContainText('2012');
+import { test, expect } from "@playwright/test";
+test("dated snapshots update the actual image, sound context and playback", async ({
+  page,
+}) => {
+  await page.goto("/explore");
+  await page.locator(".region-card").first().click();
+  const later = page.getByRole("button", { name: "2023", exact: true });
+  await expect(later).toBeEnabled({ timeout: 30000 });
+  const frame = () =>
+    page
+      .locator(".scene-image canvas")
+      .evaluate((c: HTMLCanvasElement) => c.toDataURL());
+  const before = await frame();
+  await page.getByRole("button", { name: "Pause sonification" }).click();
+  await page.getByLabel("Spatial scan position").fill("0.45");
+  await later.click();
+  await expect(later).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".scene-tabs")).toContainText("2023");
+  expect(await frame()).not.toBe(before);
+  await expect(page.getByLabel("Spatial scan position")).toHaveValue("0.45");
+  await page.getByRole("button", { name: "Play sonification" }).click();
+  await expect(
+    page.getByRole("button", { name: "Pause sonification" }),
+  ).toBeVisible();
+  await page.screenshot({ path: "test-results/nightlights-2023-desktop.png" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(
+    page.getByRole("button", { name: "2012", exact: true }),
+  ).toBeInViewport();
+  await expect(page.locator(".play-button")).toBeInViewport();
+  await page.screenshot({ path: "test-results/nightlights-2023-mobile.png" });
+  await page.getByRole("button", { name: "2012", exact: true }).click();
+  await expect(page.locator(".scene-tabs")).toContainText("2012");
 });

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-test("region listening, ASCII, audio controls, focus restoration and mobile layout", async ({
+test("region listening, audio controls, focus restoration and mobile layout", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -29,8 +29,6 @@ test("region listening, ASCII, audio controls, focus restoration and mobile layo
     )
     .toBeGreaterThan(0);
   await page.getByRole("button", { name: "Pause sonification" }).click();
-  await page.getByRole("button", { name: "ASCII signal" }).click();
-  await expect(room.locator("pre")).not.toBeEmpty();
   await page.getByLabel("Spatial scan position").fill("0.7");
   await page.screenshot({ path: "test-results/listening-desktop.png" });
   await page.keyboard.press("Escape");

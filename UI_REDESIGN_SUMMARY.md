@@ -35,3 +35,7 @@ Moved the audio dock into a React portal attached to document.body so animated, 
 ## Dated night-lights snapshots
 
 Added two-date 2012/2023 comparison controls to India and Ukraine with synchronized NASA imagery, ASCII and audio features. Both annual snapshots use a pooled fixed calibration; switching preserves scan position, pause state, voice masks and volume. Extracted 2023 from visually verified frame 240 of SVS 5313 using the original pixel crop windows. No new dependencies. This is rendered-image comparison, not calibrated radiance or continuous annual playback.
+
+## Image display simplification
+
+Removed the per-study ASCII image toggle and its per-scan conversion. NASA imagery remains visible throughout playback and date comparison. The landing-page ambient ASCII background remains.

@@ -370,8 +370,8 @@ export default function App() {
             <div>
               <h3>Another way to perceive.</h3>
               <p>
-                Switch between NASA imagery and ASCII, explore with a keyboard,
-                and read the mapping behind each sound.
+                Explore NASA imagery with a keyboard, and read the mapping
+                behind each sound.
               </p>
             </div>
           </section>

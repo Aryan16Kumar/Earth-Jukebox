@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AudioLines, Pause, Play, Plus, Volume2, X } from "lucide-react";
 import * as Tone from "tone";
 import { AudioEngine } from "./audio";
-import { analyzeBand, asciiFrame, type Feature } from "./analysis";
+import { analyzeBand, type Feature } from "./analysis";
 import { asset, type Region, type Scene } from "./scenes";
 import { info } from "./catalog";
 import { analyzeScene } from "./catalogAnalysis";
@@ -46,8 +46,6 @@ export default function ListeningRoom({
     [error, setError] = useState(""),
     [playing, setPlaying] = useState(false),
     [progress, setProgress] = useState(0),
-    [ascii, setAscii] = useState(false),
-    [asciiText, setAsciiText] = useState(""),
     [enabled, setEnabled] = useState([true, true, true]),
     [volume, setVolume] = useState(0.65),
     [features, setFeatures] = useState<Feature[]>([empty, empty, empty]);
@@ -136,12 +134,6 @@ export default function ListeningRoom({
         });
     if (!publish) return f;
     setFeatures(f);
-    const ac = document.createElement("canvas");
-    ac.width = 72;
-    ac.height = 30;
-    const ax = ac.getContext("2d")!;
-    ax.drawImage(c, 0, 0, 72, 30);
-    setAsciiText(asciiFrame(ax.getImageData(0, 0, 72, 30).data, 72, 30));
     return f;
   }
   useEffect(() => {
@@ -299,21 +291,14 @@ export default function ListeningRoom({
             </div>
           )}
           <div className="scene-tabs">
-            <button aria-pressed={!ascii} onClick={() => setAscii(false)}>
-              NASA visual
-            </button>
-            <button aria-pressed={ascii} onClick={() => setAscii(true)}>
-              ASCII signal
-            </button>
+            <span className="visual-label">NASA visual</span>
             <span>{details.period}</span>
           </div>
           <div className="scene-image">
             <canvas
               ref={canvas}
               aria-label={`NASA source image: ${region.name}. Analysis uses the displayed crop.`}
-              style={{ visibility: ascii ? "hidden" : "visible" }}
             />
-            {ascii && <pre aria-hidden="true">{asciiText}</pre>}
             {details.profile === "stars" ? (
               <div
                 className="scan-ray"
