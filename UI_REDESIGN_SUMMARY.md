@@ -31,3 +31,15 @@ The WebGL canvas now fills the entire hero behind its text and controls, prevent
 ## iPhone audio dock fix
 
 Moved the audio dock into a React portal attached to document.body so animated, scrollable source panels cannot clip or reposition fixed controls in Safari. Added bottom safe-area offsets and viewport-fit=cover. Playback and scientific mappings are unchanged. Physical iPhone verification remains necessary after Vercel redeploys.
+
+## Dated night-lights snapshots
+
+Added two-date 2012/2023 comparison controls to India and Ukraine with synchronized NASA imagery, ASCII and audio features. Both annual snapshots use a pooled fixed calibration; switching preserves scan position, pause state, voice masks and volume. Extracted 2023 from visually verified frame 240 of SVS 5313 using the original pixel crop windows. No new dependencies. This is rendered-image comparison, not calibrated radiance or continuous annual playback.
+
+## Image display simplification
+
+Removed the per-study ASCII image toggle and its per-scan conversion. NASA imagery remains visible throughout playback and date comparison. The landing-page ambient ASCII background remains.
+
+## Loading screen
+
+Added an initial full-screen dark/lime loading surface with orbital linework and a restrained signal animation. Dismissal follows the first rendered globe frame after its texture loads; no simulated progress percentage or minimum wait. A continue action and existing globe error handling prevent trapping visitors. Reduced motion receives a static equivalent. No new dependencies.

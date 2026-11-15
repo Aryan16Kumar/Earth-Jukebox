@@ -1,6 +1,6 @@
 ﻿# Earth Jukebox
 
-Explore NASA imagery through an interactive 3D Earth, a searchable listening library, original browser-generated audio, and an ASCII image view. Built for The Earth Information Jukebox, NASA Space Apps 2026.
+Explore NASA imagery through an interactive 3D Earth, a searchable listening library, original browser-generated audio. Built for The Earth Information Jukebox, NASA Space Apps 2026.
 
 ## What is implemented
 
@@ -8,7 +8,7 @@ Explore NASA imagery through an interactive 3D Earth, a searchable listening lib
 - Eight additional Earth-science resources: surface currents/temperature, GEOS aerosols, air quality, Perpetual Ocean 2, DYAMOND CO2, ISS lightning, atmospheric rivers, and GEDI canopy height.
 - Caldwell 73 as a separate astronomy teaching exercise with a clockwise radial scan.
 - EIC Content Database entry point in the library; category filtering, search, source links, per-track explanations and limitations.
-- Three controllable synth voices, volume, pause/replay, seeking, ASCII rendering, keyboard-accessible detail panels, an audio-reactive waveform and responsive layouts.
+- Three controllable synth voices, volume, pause/replay, seeking, keyboard-accessible detail panels, an audio-reactive waveform and responsive layouts.
 
 Each visual resource currently uses a **published still or extracted frame**. Sound is generated dynamically by scanning image space. The app does not yet play complete historical animations, query live NASA data, or reconstruct calibrated physical measurements. Geographic globe selection is available for the two validated night-lights regions; other camera views remain in the library rather than being given invented map coordinates.
 
@@ -55,7 +55,7 @@ Credit: NASA Scientific Visualization Studio and the named visualizers/scientist
 
 ## Processing and audio architecture
 
-Python prepares assets; React/TypeScript/Vite serves the app; React Three Fiber/Drei/Three.js renders the globe; Canvas extracts features; Tone.js produces the audio. The 24-second scan follows the audio-context clock. Color and spatial features select notes from profile-specific scales and pitch registers, note strength, and stereo placement. Three synths use envelopes and a master limiter. Instrument families, pulse grids, envelopes, filters, and delay differ by topic. ASCII renders the same crop and does not alter audio input.
+Python prepares assets; React/TypeScript/Vite serves the app; React Three Fiber/Drei/Three.js renders the globe; Canvas extracts features; Tone.js produces the audio. The 24-second scan follows the audio-context clock. Color and spatial features select notes from profile-specific scales and pitch registers, note strength, and stereo placement. Three synths use envelopes and a master limiter. Instrument families, pulse grids, envelopes, filters, and delay differ by topic.
 
 Audio startup depends on browser gesture policy; an explicit Play control is always available. Closing a scene disposes its synth resources.
 
@@ -73,7 +73,7 @@ Downloads and review contact sheets stay in ignored `.cache/`. Bundled image der
 
 ## Validation and remaining work
 
-Unit checks cover resource coverage, metadata, crop bounds, deterministic features, dark/transparent inputs, color separation, neutral annotation suppression, and ASCII. Browser checks cover all nine added resources, real-image signals, filters/search/empty states, source links, ASCII, playback, focus restoration, and desktop/mobile layout.
+Unit checks cover resource coverage, metadata, crop bounds, deterministic features, dark/transparent inputs, color separation, neutral annotation suppression, and ASCII. Browser checks cover all nine added resources, real-image signals, filters/search/empty states, source links, playback, focus restoration, and desktop/mobile layout.
 
 Human listening/comprehension tests, full screen-reader review, and validation with blind or low-vision users remain outstanding. The large 3D bundle remains a performance optimization opportunity. Future work includes temporal frame sequences and more precise scientific masks; neither is represented as already implemented.
 
@@ -111,3 +111,11 @@ The separate landing page introduces the experience with a rotating Earth and a 
 The globe uses NASA Blue Marble Next Generation (May 2004), downloaded from NASA Earth Observatory. This 5400 x 2700 context texture is separate from the images used for sonification. Provenance is recorded in `public/assets/globe-provenance.json`. It is a global texture, not streamed Google Earth terrain or street-level imagery.
 
 Reduced motion stops automatic orbit and ASCII animation; search and controls remain immediate. Reduced transparency and high contrast receive explicit surface treatments. No new package dependencies were added. See `UI_REDESIGN_SUMMARY.md` for scope, checks and limitations.
+
+## Dated night-lights comparison
+
+India and Ukraine now offer 2012 and 2023 annual-average snapshots from NASA SVS 5313. Choose a regional study, play, then switch years: the visual and input sound features update at the same spatial scan position. Both snapshots share a pooled audio calibration computed from 48 spatial samples per year; this keeps the artistic audio reference consistent within each regional comparison. It does not produce calibrated radiance or establish a cause of change. This is a two-date comparison, not a continuous twelve-year reconstruction.
+
+The 2023 image comes from frame 240 (8 seconds at 30 fps) of the original EIC movie, before the colored difference-map transition. Its year label was visually checked. `public/assets/nightlights-timeline.json` records provenance; `python scripts/prepare_timeline.py` reproduces the derivatives from `.cache/eic.mp4`.
+
+Quick demo: Enter Earth ? India ? Play ? 2023 ? 2012. On phones the year buttons are in the regional panel; the player remains pinned below it.

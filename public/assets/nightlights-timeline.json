@@ -1,0 +1,50 @@
+{
+  "source": "https://svs.gsfc.nasa.gov/5313/",
+  "video": "https://svs.gsfc.nasa.gov/vis/a000000/a005300/a005313/nightlights_flat_series_and_change_wZooms_13_EIC_2160p30_h265.mp4",
+  "frames": [
+    {
+      "year": 2012,
+      "frame": 0,
+      "seconds": 0
+    },
+    {
+      "year": 2023,
+      "frame": 240,
+      "seconds": 8
+    }
+  ],
+  "verification": "Year labels visually inspected in the original full map sequence; same projection and regional pixel windows, before the colored change-map transition.",
+  "regions": {
+    "india": {
+      "bounds": [
+        67,
+        6,
+        98,
+        37
+      ],
+      "pixelCrop": [
+        2635,
+        636,
+        2965,
+        1008
+      ],
+      "note": "Rectangular regional window; includes neighboring territory, not a national boundary mask."
+    },
+    "ukraine": {
+      "bounds": [
+        22,
+        44,
+        41,
+        53
+      ],
+      "pixelCrop": [
+        2155,
+        444,
+        2357,
+        552
+      ],
+      "note": "Rectangular regional window; includes neighboring territory, not a national boundary mask."
+    }
+  },
+  "scope": "Two rendered annual-average snapshots; not radiance measurements or a continuous historical reconstruction."
+}

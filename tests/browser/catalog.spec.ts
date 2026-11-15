@@ -1,6 +1,6 @@
-﻿import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { catalog } from "../../src/catalog";
-test("every NASA resource loads, maps pixels, exposes source and renders ASCII", async ({
+test("every NASA resource loads, maps pixels, exposes source and playback controls", async ({
   page,
 }) => {
   test.setTimeout(180000);
@@ -81,8 +81,6 @@ test("every NASA resource loads, maps pixels, exposes source and renders ASCII",
       await page.getByRole("button", { name: "Pause sonification" }).click();
     await page.getByLabel("Spatial scan position").fill("0.48");
     await expect(room.locator(".layers button")).toHaveCount(3);
-    await page.getByRole("button", { name: "ASCII signal" }).click();
-    await expect(room.locator("pre")).not.toBeEmpty();
     await room
       .locator("summary")
       .filter({ hasText: "Source, geography" })

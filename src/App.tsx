@@ -17,9 +17,11 @@ import { catalog } from "./catalog";
 import ListeningRoom from "./ListeningRoom";
 import ResourceLibrary from "./ResourceLibrary";
 import About from "./About";
+import LoadingScreen from "./LoadingScreen";
 import AsciiField from "./AsciiField";
 const Globe = lazy(() => import("./Globe"));
 export default function App() {
+  const [booted, setBooted] = useState(false);
   const [path, setPath] = useState(location.pathname);
   const explorer = path.endsWith("/explore");
   const [reduced, setReduced] = useState(
@@ -177,7 +179,11 @@ export default function App() {
                 selected={regions.find((r) => r.id === selected?.id)}
                 onSelect={select}
 
-                onFail={() => setFailed(true)}
+                onFail={() => {
+                  setFailed(true);
+                  setBooted(true);
+                }}
+                onReady={() => setBooted(true)}
               />
             </Suspense>
           </div>
@@ -278,7 +284,11 @@ export default function App() {
                   presentation
                   onSelect={select}
 
-                  onFail={() => setFailed(true)}
+                  onFail={() => {
+                    setFailed(true);
+                    setBooted(true);
+                  }}
+                  onReady={() => setBooted(true)}
                 />
               </Suspense>
             </div>
@@ -370,8 +380,8 @@ export default function App() {
             <div>
               <h3>Another way to perceive.</h3>
               <p>
-                Switch between NASA imagery and ASCII, explore with a keyboard,
-                and read the mapping behind each sound.
+                Explore NASA imagery with a keyboard, and read the mapping
+                behind each sound.
               </p>
             </div>
           </section>
@@ -388,6 +398,7 @@ export default function App() {
           </footer>
         </>
       )}
+      {!booted && <LoadingScreen onContinue={() => setBooted(true)} />}
       {about && <About onClose={() => setAbout(false)} />}
     </main>
   );
